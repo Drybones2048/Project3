@@ -24,34 +24,35 @@ int main() {
     bool debugButtonPressed = false; //boolean used to determine if the debug button has been shown and therefore all the mines should show where they are
     bool gameWon = false; //boolean for if the game has been won
     bool gameLost = false; //boolean for if tha game has been lost
+    bool negativeCounter = false; 
 
     string digitString = ""; //empty string to use for substring to get mine count 
     digitString.append(to_string(test.minesCount)); //appends mine count to the string to use substring
     int tensPlaceInt;
     int onesPlaceInt;
-    int signPlaceInt = 1; 
+    int signPlaceInt = 0; 
 
     if (test.minesCount > 9) {
-        tensPlaceInt = stoi(digitString.substr(0, 1)) + 1;
-        onesPlaceInt = stoi(digitString.substr(1, 2)) + 1;
+        tensPlaceInt = stoi(digitString.substr(0, 1));
+        onesPlaceInt = stoi(digitString.substr(1, 2));
     }
     else {
         tensPlaceInt = 1;
-        onesPlaceInt = stoi(digitString.substr(0, 1)) + 1;
+        onesPlaceInt = stoi(digitString.substr(0, 1));
     }
 
 
     map<int, Texture> digitTextures;
-    digitTextures[1].loadFromFile("images/digits.png", sf::IntRect(0, 0, 21, 32));
-    digitTextures[2].loadFromFile("images/digits.png", sf::IntRect(21, 0, 21, 32));
-    digitTextures[3].loadFromFile("images/digits.png", sf::IntRect(21 * 2, 0, 21, 32));
-    digitTextures[4].loadFromFile("images/digits.png", sf::IntRect(21 * 3, 0, 21, 32));
-    digitTextures[5].loadFromFile("images/digits.png", sf::IntRect(21 * 4, 0, 21, 32));
-    digitTextures[6].loadFromFile("images/digits.png", sf::IntRect(21 * 5, 0, 21, 32));
-    digitTextures[7].loadFromFile("images/digits.png", sf::IntRect(21 * 6, 0, 21, 32));
-    digitTextures[8].loadFromFile("images/digits.png", sf::IntRect(21 * 7, 0, 21, 32));
-    digitTextures[9].loadFromFile("images/digits.png", sf::IntRect(21 * 8, 0, 21, 32));
-    digitTextures[10].loadFromFile("images/digits.png", sf::IntRect(21 * 9, 0, 21, 32));
+    digitTextures[0].loadFromFile("images/digits.png", sf::IntRect(0, 0, 21, 32));
+    digitTextures[1].loadFromFile("images/digits.png", sf::IntRect(21, 0, 21, 32));
+    digitTextures[2].loadFromFile("images/digits.png", sf::IntRect(21 * 2, 0, 21, 32));
+    digitTextures[3].loadFromFile("images/digits.png", sf::IntRect(21 * 3, 0, 21, 32));
+    digitTextures[4].loadFromFile("images/digits.png", sf::IntRect(21 * 4, 0, 21, 32));
+    digitTextures[5].loadFromFile("images/digits.png", sf::IntRect(21 * 5, 0, 21, 32));
+    digitTextures[6].loadFromFile("images/digits.png", sf::IntRect(21 * 6, 0, 21, 32));
+    digitTextures[7].loadFromFile("images/digits.png", sf::IntRect(21 * 7, 0, 21, 32));
+    digitTextures[8].loadFromFile("images/digits.png", sf::IntRect(21 * 8, 0, 21, 32));
+    digitTextures[9].loadFromFile("images/digits.png", sf::IntRect(21 * 9, 0, 21, 32));
     digitTextures[-1].loadFromFile("images/digits.png", sf::IntRect(21 * 10, 0, 21, 32));
     
         
@@ -82,11 +83,11 @@ int main() {
 
     Sprite happyFace; //creates a sprite for the face in the middle
 
-    Sprite onesPlace; 
+    Sprite onesPlace; //ones place in score counter 
+    
+    Sprite tensPlace; //tens place in score counter
 
-    Sprite tensPlace; 
-
-    Sprite signPlace;
+    Sprite signPlace; //sign place in the sign counter 
 
     Color color(255, 255, 255); //color white for the background of the window
 
@@ -399,8 +400,8 @@ int main() {
                     }
 
                     
-                    tensPlaceInt = 1;
-                    onesPlaceInt = 2;
+                    tensPlaceInt = 0;
+                    onesPlaceInt = 1;
                     
 
                     numberTiles(tileList, test);
@@ -435,9 +436,9 @@ int main() {
                     }
 
                     
-                    signPlaceInt = 2; 
-                    tensPlaceInt = 1;
-                    onesPlaceInt = 3; 
+                    signPlaceInt = 1; 
+                    tensPlaceInt = 0;
+                    onesPlaceInt = 2; 
 
                     numberTiles(tileList, test);
                 }
@@ -470,8 +471,8 @@ int main() {
                     }
 
                      
-                    tensPlaceInt = 9; 
-                    onesPlaceInt = 4;
+                    tensPlaceInt = 8; 
+                    onesPlaceInt = 3;
 
                     numberTiles(tileList, test);
                 }
@@ -489,14 +490,15 @@ int main() {
                     checkNeighbors(tileList, test); //updates the vector of neighbors
 
                     if (test.minesCount > 9) {
-                        tensPlaceInt = stoi(digitString.substr(0, 1)) + 1;
-                        onesPlaceInt = stoi(digitString.substr(1, 2)) + 1;
+                        tensPlaceInt = stoi(digitString.substr(0, 1));
+                        onesPlaceInt = stoi(digitString.substr(1, 2));
                     }
                     else {
-                        tensPlaceInt = 1;
-                        onesPlaceInt = stoi(digitString.substr(0, 1)) + 1;
+                        tensPlaceInt = 0;
+                        onesPlaceInt = test.minesCount;
                     }
 
+                    signPlaceInt = 0; 
 
                     numberTiles(tileList, test);
                 }
@@ -518,40 +520,67 @@ int main() {
                         if ((mouseX >= currentTile->tileSprite.getPosition().x && mouseX <= (currentTile->tileSprite.getPosition().x + currentTile->tileSprite.getTextureRect().width))) { //if the mouse is clicked within the dimensions of a box, go into this if 
                             if ((mouseY >= currentTile->tileSprite.getPosition().y && mouseY <= (currentTile->tileSprite.getPosition().y + currentTile->tileSprite.getTextureRect().height))) { //if the mouse is clicked within the dimensions of a box, go into this if 
 
-                                if (tileList[i][j]->isFlagged) { //if the tile is already flagged, unflag it
+                                if (tileList[i][j]->isFlagged) { //if the tile is already flagged, unflag it and incriment the counter 
                                     tileList[i][j]->isFlagged = false;
 
                                     tileList[i][j]->tileSprite.setTexture(textures["hiddenTile"]); //texture will be hidden tile after the flag is removed
 
-                                    if (onesPlaceInt == 10) {
-                                        tensPlaceInt++;
-                                        onesPlaceInt = 1;
+                                    if (negativeCounter) { //if the counter is negative
+                                        if (onesPlaceInt == 0) { //count down code 
+                                            tensPlaceInt--; 
+                                            onesPlaceInt = 9;
+                                        }
+                                        else {
+                                            onesPlaceInt--; 
+                                        }
                                     }
-                                    else {
-                                        onesPlaceInt++;
+                                    else { //if the counter is still positive
+                                        if (onesPlaceInt == 9) { //count up code 
+                                            tensPlaceInt++;
+                                            onesPlaceInt = 0;
+                                        }
+                                        else {
+                                            onesPlaceInt++;
+                                        }
                                     }
 
+
+                                    
+
                                 }
-                                else {
+                                else { //if the tile is not already flagged, add a flag and decriment the counter 
                                     Sprite flag; //create a sprite for the flag 
                                     flag.setTexture(textures["flag"]); //sets the flag texture on the space 
                                     flag.setPosition(currentTile->tileSprite.getPosition()); //gets the position of the tile as the position of the flag
 
                                     currentTile->isFlagged = true; //states that the current tile has been flagged 
 
-                                    if (onesPlaceInt == 1) {
-                                        if (tensPlaceInt == 1) {
-                                            signPlaceInt = -1;
-
+                                    if (negativeCounter) { //if the counter is negative, use count up code because it is negative 
+                                        if (onesPlaceInt == 9) {
+                                            tensPlaceInt++;
+                                            onesPlaceInt = 0;
                                         }
-
-
-                                        tensPlaceInt--;
-                                        onesPlaceInt = 10;
+                                        else {
+                                            onesPlaceInt++;
+                                        }
                                     }
-                                    else {
-                                        onesPlaceInt--;
+                                    else { //if the counter is not negative, decriment the counter 
+                                        if (onesPlaceInt == 0) {
+                                            if (tensPlaceInt == 0) {
+                                                signPlaceInt = -1;
+                                                negativeCounter = true;
+                                            }
+                                            else {
+                                                tensPlaceInt--;
+                                                onesPlaceInt = 9;
+                                            }
+                                        }
+                                        else {
+                                            onesPlaceInt--;
+                                        }
                                     }
+
+                                    
 
 
                                     window.draw(flag);
